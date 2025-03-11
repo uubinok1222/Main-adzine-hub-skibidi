@@ -1,0 +1,292 @@
+local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/discoart/FluentPlus/refs/heads/main/Beta.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "adzine Hub",
+    SubTitle = "by bin_skibidi.",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(480, 310),
+    Acrylic = true,
+    Theme = "Midnight",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
+    Esp = Window:AddTab({ Title = "esp", Icon = "eye" }),
+    Shop = Window:AddTab({ Title = "shop", Icon = "shopping-cart" }),
+    Teleport = Window:AddTab({ Title = "dịch chuyển", Icon = "navigation" }) -- Thêm icon "navigation"
+}
+
+local function HSVtoRGB(h, s, v)
+    local i = math.floor(h * 6)
+    local f = h * 6 - i
+    local p = v * (1 - s)
+    local q = v * (1 - f * s)
+    local t = v * (1 - (1 - f) * s)
+    local r, g, b
+    if i % 6 == 0 then r, g, b = v, t, p
+    elseif i % 6 == 1 then r, g, b = q, v, p
+    elseif i % 6 == 2 then r, g, b = p, v, t
+    elseif i % 6 == 3 then r, g, b = p, q, v
+    elseif i % 6 == 4 then r, g, b = t, p, v
+    elseif i % 6 == 5 then r, g, b = v, p, q
+    end
+    return Color3.new(r, g, b)
+end
+
+spawn(function()
+    local hue = 0
+    while true do
+        hue = (hue + 0.01) % 1
+        wait(0.1)
+    end
+end)
+
+local Options = Fluent.Options
+
+do
+    Fluent:Notify({
+        Title = "Notification",
+        Content = "This is a notification",
+        SubContent = "SubContent",
+        Duration = 5
+    })
+
+    Tabs.Main:AddParagraph({
+        Title = "Paragraph",
+        Content = "This is a paragraph.\nSecond line!"
+    })
+
+    Tabs.Main:AddButton({
+        Title = "Button",
+        Description = "Very important button",
+        Callback = function()
+            Window:Dialog({
+                Title = "Title",
+                Content = "This is a dialog",
+                Buttons = {
+                    { Title = "Confirm", Callback = function() print("Confirmed the dialog.") end },
+                    { Title = "Cancel", Callback = function() print("Cancelled the dialog.") end }
+                }
+            })
+        end
+    })
+
+    Tabs.Shop:AddButton({
+        Title = "Buy Soru",
+        Description = "Purchase Soru Haki",
+        Callback = function()
+            Window:Dialog({
+                Title = "Bạn chắc chắn mua không?",
+                Content = "",
+                Buttons = {
+                    { 
+                        Title = "Xác nhận", 
+                        Callback = function() 
+                            local success, result = pcall(function()
+                                return game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
+                            end)
+                            if success and result then
+                                Fluent:Notify({Title = "Thành công", Content = "Đã mua Soru!", Duration = 3})
+                            else
+                                Fluent:Notify({Title = "Lỗi", Content = "Không thể mua Soru.", Duration = 3})
+                            end
+                        end 
+                    },
+                    { 
+                        Title = "Bỏ qua", 
+                        Callback = function() 
+                            print("Cancelled the dialog.") 
+                        end 
+                    }
+                }
+            })
+        end
+    })
+
+    Tabs.Settings:AddButton({
+        Title = "Rejoin Server",
+        Description = "",
+        Callback = function()
+            local success, err = pcall(function()
+                game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+            end)
+            if not success then
+                warn("Failed to rejoin server:", err)
+            end
+        end
+    })
+
+    Tabs.Settings:AddButton({
+        Title = "Hop Server",
+        Description = "",
+        Callback = function()
+            local PlaceID = game.PlaceId
+            local AllIDs = {}
+            local foundAnything = ""
+            local actualHour = os.date("!*t").hour
+            local function TPReturner()
+                local Site
+                if foundAnything == "" then
+                    Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+                else
+                    Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+                end
+                local ID = ""
+                if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+                    foundAnything = Site.nextPageCursor
+                end
+                for _, v in pairs(Site.data) do
+                    local Possible = true
+                    ID = tostring(v.id)
+                    if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                        for _, Existing in pairs(AllIDs) do
+                            if ID == tostring(Existing) then
+                                Possible = false
+                            end
+                        end
+                        if Possible then
+                            table.insert(AllIDs, ID)
+                            local success, err = pcall(function()
+                                game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                            end)
+                            if not success then
+                                warn("Failed to hop server:", err)
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+            TPReturner()
+        end
+    })
+
+    Tabs.Teleport:AddButton({
+        Title = "Sea Một",
+        Description = "Khi ấn nó sẽ dịch chuyển bạn về Sea Một",
+        Callback = function()
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelMain")
+            end)
+            if success then
+                Fluent:Notify({Title = "Thành công", Content = "Đã dịch chuyển về Sea Một!", Duration = 3})
+            else
+                warn("Failed to teleport to Sea 1:", err)
+            end
+        end
+    })
+
+    Tabs.Teleport:AddButton({
+        Title = "Sea Hai",
+        Description = "Khi ấn nó sẽ dịch chuyển bạn tới hoặc về Sea Hai",
+        Callback = function()
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelDressrosa")
+            end)
+            if success then
+                Fluent:Notify({Title = "Thành công", Content = "Đã dịch chuyển tới Sea Hai!", Duration = 3})
+            else
+                warn("Failed to teleport to Sea 2:", err)
+            end
+        end
+    })
+
+    Tabs.Teleport:AddButton({
+        Title = "Sea Ba",
+        Description = "Ấn vào nó sẽ dịch chuyển bạn tới Sea Ba",
+        Callback = function()
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelZou")
+            end)
+            if success then
+                Fluent:Notify({Title = "Thành công", Content = "Đã dịch chuyển tới Sea Ba!", Duration = 3})
+            else
+                warn("Failed to teleport to Sea 3:", err)
+            end
+        end
+    })
+
+    local Toggle = Tabs.Main:AddToggle("MyToggle", { Title = "Toggle", Default = false })
+    Toggle:OnChanged(function()
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+    Options.MyToggle:SetValue(false)
+
+    local Slider = Tabs.Main:AddSlider("SpeedSlider", {
+        Title = "Speed",
+        Description = "Adjust your walk speed",
+        Default = 16,
+        Min = 10,
+        Max = 50,
+        Rounding = 1,
+        Callback = function(Value)
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:WaitForChild("Humanoid")
+            humanoid.WalkSpeed = Value
+            print("Speed changed to:", Value)
+        end
+    })
+    Slider:SetValue(16)
+
+    local Dropdown = Tabs.Main:AddDropdown("TeamDropdown", {
+        Title = "Team",
+        Values = {"hải tặc", "hải quân"},
+        Multi = false,
+        Default = 2,
+    })
+    Dropdown:SetValue("hải quân")
+    Dropdown:OnChanged(function(Value)
+        local args = {
+            [1] = "SetTeam",
+            [2] = Value == "hải quân" and "Marines" or "Pirates"
+        }
+        local success, err = pcall(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer(unpack(args))
+        end)
+        if success then
+            Fluent:Notify({Title = "Thành công", Content = "Đã đổi team thành " .. Value .. "!", Duration = 3})
+        else
+            warn("Failed to change team:", err)
+        end
+    end)
+
+    local Colorpicker = Tabs.Main:AddColorpicker("Colorpicker", {
+        Title = "Colorpicker",
+        Default = Color3.fromRGB(96, 205, 255)
+    })
+    Colorpicker:OnChanged(function()
+        print("Colorpicker changed:", Colorpicker.Value)
+    end)
+
+    local SettingsDropdown = Tabs.Settings:AddDropdown("AutoHakiDropdown", {
+        Title = "Auto Haki",
+        Values = {"auto haki"},
+        Multi = false,
+        Default = 1,
+    })
+    SettingsDropdown:SetValue("auto haki")
+    SettingsDropdown:OnChanged(function(Value)
+        if Value == "auto haki" then
+            local success, err = pcall(function()
+                loadstring(game:HttpGet("https://pastebin.com/raw/yTasDiki"))()
+            end)
+            if success then
+                Fluent:Notify({Title = "Thành công", Content = "Đã kích hoạt Auto Haki!", Duration = 3})
+            else
+                warn("Failed to load Auto Haki script:", err)
+                Fluent:Notify({Title = "Lỗi", Content = "Không thể tải script Auto Haki.", Duration = 3})
+            end
+        end
+    end)
+end
+
+Window:SelectTab(1)
+
+Fluent:Notify({
+    Title = "adzine hub",
+    Content = "Cảm ơn đã sử dụng adzine hub, vui lòng đợi một chút để hiện menu...",
+    Duration = 8
+})
