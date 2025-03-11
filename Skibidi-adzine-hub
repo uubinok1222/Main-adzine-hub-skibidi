@@ -214,13 +214,12 @@ do
     end)
     Options.MyToggle:SetValue(false)
 
-Tabs.Esp:AddToggle("esp player", { Title = "ESP Player", Default = false })
-EspToggle:OnChanged(function()
-    enabled = Options["esp player"].Value
-    updateESP()
-    print("ESP Player Toggle changed:", Options["esp player"].Value)
+Tabs.Esp:AddToggle("ToggleEspPlayer", {Title = "Esp Player", Default = false })
+ToggleEspPlayer:OnChanged(function(Value)
+    ESPPlayer = Value
+	UpdatePlayerChams()
 end)
-Options["esp player"]:SetValue(false)
+Options.ToggleEspPlayer:SetValue(false)
 
     local Slider = Tabs.Main:AddSlider("SpeedSlider", {
         Title = "Speed",
