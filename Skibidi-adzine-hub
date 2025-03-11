@@ -209,21 +209,6 @@ do
         end
     })
 
-Tabs.fruits:AddToggle("ToggleRandomFruit", {Title = "Random Fruit", Default = false })
-ToggleRandomFruit:OnChanged(function(Value)
-    _G.Random_Auto = Value
-end)
-Options.ToggleRandomFruit:SetValue(false)
-spawn(function()
-    pcall(function()
-        while wait(.1) do
-            if _G.Random_Auto then
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Cousin","Buy")
-            end 
-        end
-    end)
-end)
-
     local Toggle = Tabs.Main:AddToggle("MyToggle", { Title = "Toggle", Default = false })
     Toggle:OnChanged(function()
         print("Toggle changed:", Options.MyToggle.Value)
@@ -245,6 +230,21 @@ ToggleEspIsland:OnChanged(function(Value)
     end
 end)
 Options.ToggleEspIsland:SetValue(false)
+
+Tabs.fruits:AddToggle("ToggleRandomFruit", {Title = "Random Fruit", Default = false })
+ToggleRandomFruit:OnChanged(function(Value)
+    _G.Random_Auto = Value
+end)
+Options.ToggleRandomFruit:SetValue(false)
+spawn(function()
+    pcall(function()
+        while wait(.1) do
+            if _G.Random_Auto then
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Cousin","Buy")
+            end 
+        end
+    end)
+end)
 
     local Slider = Tabs.Main:AddSlider("SpeedSlider", {
         Title = "Speed",
