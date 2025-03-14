@@ -209,7 +209,7 @@ do
         end
     })
 
-    Tabs.Teleport:AddButton({
+    Tabs.fruits:AddButton({
         Title = "shop trái ác quỷ",
         Description = "khi ấn sẽ mở shop trái ác quỷ",
         Callback = function()
