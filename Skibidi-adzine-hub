@@ -209,6 +209,22 @@ do
         end
     })
 
+    Tabs.Teleport:AddButton({
+        Title = "shop trái ác quỷ",
+        Description = "khi ấn sẽ mở shop trái ác quỷ",
+        Callback = function()
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("GetFruits")
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.FruitShop.Visible = true
+	end
+            if success then
+                Fluent:Notify({Title = "Thành công", Content = "đã mở shop trái ác quỷ!", Duration = 3})
+            else
+                warn("không thành công khi đang mở shop trái ác quỷ!:", err)
+            end
+        end
+    })
+
     local Toggle = Tabs.Main:AddToggle("MyToggle", { Title = "Toggle", Default = false })
     Toggle:OnChanged(function()
         print("Toggle changed:", Options.MyToggle.Value)
