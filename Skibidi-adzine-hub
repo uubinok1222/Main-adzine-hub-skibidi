@@ -16,7 +16,7 @@ local Tabs = {
     Esp = Window:AddTab({ Title = "esp", Icon = "eye" }),
     Shop = Window:AddTab({ Title = "shop", Icon = "shopping-cart" }),
     Teleport = Window:AddTab({ Title = "dịch chuyển", Icon = "navigation" }),
-    fruits = Window:AddTab({ Title = "fruits", Icon = "apple" }),
+    fruits = Window:AddTab({ Title = "fruits", Icon = "apple" })
 }
 
 local function HSVtoRGB(h, s, v)
