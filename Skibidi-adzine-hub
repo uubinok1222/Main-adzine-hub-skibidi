@@ -224,37 +224,6 @@ Tabs.fruits:AddButton({
     end)
     Options.MyToggle:SetValue(false)
 
-Tabs.Esp:AddToggle("ToggleEspPlayer", {Title = "Esp Player", Default = false })
-ToggleEspPlayer:OnChanged(function(Value)
-    ESPPlayer = Value
-	UpdatePlayerChams()
-end)
-Options.ToggleEspPlayer:SetValue(false)
-
-Tabs.Esp:AddToggle("ToggleEspIsland", {Title = "Esp Island", Default = false })
-ToggleEspIsland:OnChanged(function(Value)
-    IslandESP = Value
-    while IslandESP do wait()
-        UpdateIslandESP() 
-    end
-end)
-Options.ToggleEspIsland:SetValue(false)
-
-Tabs.fruits:AddToggle("ToggleRandomFruit", {Title = "Random Fruit", Default = false })
-ToggleRandomFruit:OnChanged(function(Value)
-    _G.Random_Auto = Value
-end)
-Options.ToggleRandomFruit:SetValue(false)
-spawn(function()
-    pcall(function()
-        while wait(.1) do
-            if _G.Random_Auto then
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Cousin","Buy")
-            end 
-        end
-    end)
-end)
-
     local Slider = Tabs.Main:AddSlider("SpeedSlider", {
         Title = "Speed",
         Description = "Adjust your walk speed",
